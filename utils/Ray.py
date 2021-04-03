@@ -8,4 +8,4 @@ class Ray:
         return Tuples.add(ray.origin, Tuples.multiply(ray.direction, t))
 
     def __repr__(self):
-        return f'origin --> x: {self.origin.x}, y: {self.origin.y}, z: {self.origin.z} \n direction --> x: {self.direction.x}, y: {self.direction.y}, z: {self.direction.z}'
+        return f"origin -->{self.origin} \n, direction: {self.direction}"
