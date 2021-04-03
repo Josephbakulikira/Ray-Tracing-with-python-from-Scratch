@@ -39,6 +39,7 @@ for y in range(resolution):
 
         if hit(xs) != None:
             pixel(screen, x, y, (255, 0, 0))
+            # pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(x, y, 1, 1))
 
 pygame.display.flip()
 print(perf_counter() - start)
@@ -48,6 +49,6 @@ while run:
         if event.type == pygame.QUIT:
             run = False
 
-pygame.image.save(screen,"./images/simpleSphere.jpg")
+# pygame.image.save(screen,"./images/simpleSphere.jpg")
 
 pygame.quit()

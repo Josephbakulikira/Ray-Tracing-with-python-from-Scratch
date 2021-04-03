@@ -2,10 +2,20 @@ import numpy as np
 from math import sqrt, pow
 
 class Tuples:
+
+    def __init__(self, x, y, z):
+        self.x = x
+        self.y = y
+        self.z = z
+
     def add(a,b):
         if a.w + b.w == 0:
             return Vector3(a.x + b.x, a.y + b.y, a.z + b.z)
         return Point(a.x + b.x, a.y + b.y, a.z + b.z)
+
+    def negate(self):
+        self * -1
+        self.w *= -1
 
     def sub(a,b):
         if a.w - b.w == 0:
@@ -44,16 +54,10 @@ class Tuples:
         return Point(matrix[0][0], matrix[1][0], matrix[2][0])
 
 
-class Vector3:
+class Vector3(Tuples):
     def __init__(self, x, y, z):
-        self.x = x
-        self.y = y
-        self.z = z
+        super().__init__(x, y, z)
         self.w = 0
-
-    def negate(self):
-        self * -1
-        self.w *= -1
 
     def zeros():
         return Vector3(0, 0, 0)
@@ -74,16 +78,10 @@ class Vector3:
     def __repr__(self):
         return f'Vector3 --> (x: {self.x}, y: {self.y}, z: {self.z})'
 
-class Point:
+class Point(Tuples):
     def __init__(self, x, y, z):
-        self.x = x
-        self.y = y
-        self.z = z
+        super().__init__(x, y, z)
         self.w = 1
-
-    def negate(self):
-        self * -1
-        self.w *= -1
 
     def zeros():
         return Point(0, 0, 0)
