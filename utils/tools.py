@@ -39,3 +39,14 @@ def intersect(ray, shape):
     local_ray = transform(ray, np.linalg.inv(shape.transform))
 
     return shape.localIntersect(local_ray)
+
+def normal_at(shape, world_point):
+    local_point = Tuples.toTuple(np.matmul(np.linalg.inv(shape.transform), Tuples.toMatrix(world_point)))
+    local_normal = shape.local_normal_at(local_point)
+    world_normal = Tuples.toTuple(np.matmul(np.linalg.inv(shape.transform).transpose(), Tuples.toMatrix(local_normal)))
+    world_normal = Vector3(world_normal.x, world_normal.y, world_normal.z)
+
+    return Vector3.Normalize(world_normal)
+
+def reflect(vec, normal):
+    return Tuples.sub(vec, Tuples.multiply( Tuples.multiply(normal , 2) , Tuples.dot(vec, normal)) )

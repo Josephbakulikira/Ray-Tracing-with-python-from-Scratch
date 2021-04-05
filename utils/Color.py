@@ -29,7 +29,7 @@ class Color:
             g = 255
         else:
             g = self.green * 255
-        if self.b * 255 > 255:
+        if self.blue * 255 > 255:
             b = 255
         else:
             b = self.blue * 255

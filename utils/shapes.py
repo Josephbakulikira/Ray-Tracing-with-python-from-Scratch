@@ -9,9 +9,10 @@ class Shape:
         self.position = position
         self.material = None
         self.transform = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
+        self.name = "Default"
 
     def __repr__(self):
-        return f'id: {self.id} \n position: {self.position} , material: {self.material}, \n transform: {self.transform}'
+        return f'{self.name} ==> id: {self.id} \n position: {self.position}, material: {self.material}, \n transform: {self.transform}'
 
 
 class Sphere(Shape):
@@ -38,4 +39,4 @@ class Sphere(Shape):
         return [Intersection(t1, self), Intersection(t2, self)]
 
     def local_normal_at(self, point):
-        return sub(point, Point.zeros())
+        return Tuples.sub(point, Point.zeros())

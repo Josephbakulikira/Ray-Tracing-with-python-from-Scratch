@@ -10,6 +10,8 @@ from utils.tools import *
 from time import perf_counter
 from utils.Ray import Ray
 from utils.Transform import *
+from utils.Shader.Light import *
+from utils.Shader.Material import *
 
 width = 500
 height = 500
@@ -26,7 +28,10 @@ resolution = 500
 pixel_size = wall_size/ resolution
 half = wall_size / 2
 s = Sphere()
-color = Color(1, 0, 0)
+material = Material(Color(0.95, 0.48, 0.16))
+s.material = material
+light = PointLight(Point(-10, 10, -10), Color(1, 1, 1))
+
 
 start = perf_counter()
 for y in range(resolution):
@@ -36,12 +41,15 @@ for y in range(resolution):
         position = Point(world_x, world_y, wall_z)
         r = Ray(r_origin, Vector3.Normalize(Tuples.sub(position , r_origin)))
         xs = intersect(r, s)
-
-        if hit(xs) != None:
-            pixel(screen, x, y, (255, 0, 0))
+        val = hit(xs)
+        if val != None:
+            point = Ray.position(r, val.t)
+            normal = normal_at(val.shape, point)
+            eye = Tuples.negateTuple(r.direction)
+            color = Lighting(val.shape.material, light, point, eye, normal)
+            pixel(screen, x, y, color.ConvertColor())
             # pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(x, y, 1, 1))
-
-pygame.display.flip()
+            pygame.display.flip()
 print(perf_counter() - start)
 run = True
 while run:
@@ -49,6 +57,6 @@ while run:
         if event.type == pygame.QUIT:
             run = False
 
-# pygame.image.save(screen,"./images/simpleSphere.jpg")
+pygame.image.save(screen,"./images/lightShaderSphere.jpg")
 
 pygame.quit()

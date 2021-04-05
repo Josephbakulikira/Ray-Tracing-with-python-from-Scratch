@@ -14,7 +14,10 @@ class Tuples:
         return Point(a.x + b.x, a.y + b.y, a.z + b.z)
 
     def negate(self):
-        self * -1
+        self.x *= -1
+        self.y *= -1
+        self.z *= -1
+
         self.w *= -1
 
     def sub(a,b):

@@ -6,9 +6,14 @@ from utils.tools import *
 from time import perf_counter
 from utils.Ray import Ray
 from utils.Transform import *
+from math import pi,sqrt
+from utils.Shader.Light import *
+from utils.Shader.Material import *
 
-r = Ray(Point(1, 2, 3), Vector3(0, 1, 0))
-m = scaling(2, 3, 4)
-r2 = transform(r, m)
-print(r2)
-# print(perf_counter() - start)
+m = Material()
+pos = Point(0, 0, 0)
+eyev = Vector3(0, -sqrt(2)/2, -sqrt(2)/2)
+normalv = Vector3(0, 0, -1)
+light = PointLight(Point(0, 10, -10), Color(1, 1, 1))
+result = Lighting(m, light, pos, eyev, normalv)
+print(result)
