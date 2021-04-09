@@ -1,4 +1,5 @@
 from utils.Tuples import Point, Vector3, Tuples
+from constants import *
 from math import sqrt, pow
 from utils.tools import *
 import numpy as np
@@ -40,3 +41,16 @@ class Sphere(Shape):
 
     def local_normal_at(self, point):
         return Tuples.sub(point, Point.zeros())
+
+class Plane(Shape):
+    def __init__(self, position=Point.zeros()):
+        super().__init__(position)
+
+    def localIntersect(self, ray):
+        if abs(ray.direction.y) < EPSILON:
+            return []
+        t = round ((-ray.origin.y) / ray.direction.y, 5)
+        return [Intersection(t, self)]
+
+    def local_normal_at(self, point):
+        return Vector3(0, 1, 0)

@@ -48,6 +48,9 @@ class Tuples:
                     (a.z * b.x) - (a.x * b.z),
                     (a.x * b.y) - (a.y * b.x))
 
+    def reflect(vec, normal):
+        return Tuples.sub(vec, Tuples.multiply( Tuples.multiply(normal , 2) , Tuples.dot(vec, normal)) )
+
     def toMatrix(tuple):
         return np.array( [[tuple.x], [tuple.y], [tuple.z], [tuple.w]] )
 

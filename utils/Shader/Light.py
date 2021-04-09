@@ -3,6 +3,7 @@ from utils.Color import Color
 from utils.Tuples import *
 from utils.tools import *
 from math import pow
+
 class Light:
     def __init__(self,position, intensity):
         self.id = id(self)
@@ -32,13 +33,13 @@ def Lighting(material, light, point,  eyev, normalv, inShadow=None):
     light_dot_normal = Tuples.dot(lightv, normalv)
 
 
-    if light_dot_normal < 0:
+    if light_dot_normal < 0 or inShadow == True:
         diffuse = Color()
         specular = Color()
 
     else:
         diffuse = Color.multiply(effective_color, material.diffuse * light_dot_normal)
-        reflectv = reflect(Tuples.negateTuple(lightv), normalv)
+        reflectv = Tuples.reflect(Tuples.negateTuple(lightv), normalv)
         # reflectv.negate()
         reflect_dot_eye = Tuples.dot(reflectv, eyev)
 
