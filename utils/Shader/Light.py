@@ -2,6 +2,7 @@ from utils.Tuples import *
 from utils.Color import Color
 from utils.Tuples import *
 from utils.tools import *
+from utils.Shader.Patterns import *
 from math import pow
 
 class Light:
@@ -18,16 +19,16 @@ class PointLight(Light):
     def __init__(self, position=Point.zeros(), intensity=Color.white()):
         super().__init__(position, intensity)
 
-def Lighting(material, light, point,  eyev, normalv, inShadow=None):
+def Lighting(material,obj, light, point,  eyev, normalv, inShadow=None):
     # specular, diffuse = material.specular, material.diffuse
-    # color = Color()
-    # if material.pattern != None:
-    #     color = pattern_at_object(material.pattern, obj, point)
-    # else:
-    #     color = material.color
+    color = Color()
+    if material.pattern != None:
+        color = pattern_at_object(material.pattern, obj, point)
+    else:
+        color = material.color
 
     # print(color)
-    effective_color = Color.multiply(material.color, light.intensity)
+    effective_color = Color.multiply(color, light.intensity)
     lightv = Vector3.Normalize(Tuples.sub(light.position, point))
     ambient = Color.multiply(effective_color, material.ambient)
     light_dot_normal = Tuples.dot(lightv, normalv)

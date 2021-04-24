@@ -1,4 +1,4 @@
-from math import pow , sqrt
+from math import pow , sqrt, sin, cos
 from utils.Tuples import Tuples, Point
 from utils.shapes import *
 from utils.Ray import Ray
@@ -72,20 +72,20 @@ def intersect_world(world, ray):
             _intersections.append(n)
     return _intersections
 
-def color_at(w, r, remaining=0):
+def color_at(w, r, remaining):
     i = intersect_world(w, r)
     if len(i) > 0:
         if(len(i)) == 1:
             if i[0].t > 0:
                 comps = prepare_computations(i[0], r, i)
-                return shade_hit(w, comps)
+                return shade_hit(w, comps, remaining)
             else:
                 return Color()
         # print([ire.t for ire in i])
         h = hit(i)
         if h != None:
             comps = prepare_computations(h, r, i)
-            return shade_hit(w, comps)
+            return shade_hit(w, comps, remaining)
         else:
             return Color()
     else:
@@ -95,44 +95,52 @@ def prepare_computations(i, ray, new_xs=None):
     _point = Ray.position(ray, i.t)
     comps = Computations(i.t, i.shape, Ray.position(ray, i.t), Tuples.negateTuple(ray.direction), normal_at(i.shape, _point))
     # comps.point = Ray.position(ray, comps.t)
-    # comps.reflect_vector = reflect(ray.direction, comps.normal_vector)
     if Tuples.dot(comps.normal_vector, comps.eye_vector) < 0:
         comps.inside = True
         comps.normal_vector.negate()
     else:
         comps.inside = False
+    comps.reflect_vector = Tuples.reflect(ray.direction, comps.normal_vector)
 
-    # if new_xs != None:
-    #     containers = []
-    #     for index in range(len(new_xs)):
-    #         # print(hit(xs))
-    #         if  new_xs[index] == i:
-    #             if len(containers) == 0:
-    #                 comps.n1 = Vacuum
-    #             else:
-    #                 comps.n1 = containers[-1].material.refractive_index
-    #
-    #         if new_xs[index].object in containers:
-    #             # print(xs[index].object.id)
-    #             containers.remove(new_xs[index].object)
-    #         else:
-    #             containers.append(new_xs[index].object)
-    #
-    #         if new_xs[index] == i:
-    #             if len(containers) == 0:
-    #                 comps.n2 = Vacuum
-    #             else:
-    #                 comps.n2 = containers[-1].material.refractive_index
-    #
-    #             break
-    #
+    if new_xs != None:
+        containers = []
+        for index in range(len(new_xs)):
+            # print(hit(xs))
+            if  new_xs[index] == i:
+                if len(containers) == 0:
+                    comps.n1 = Vacuum
+                else:
+                    comps.n1 = containers[-1].material.refractive_index
+
+            if new_xs[index].shape in containers:
+                # print(xs[index].object.id)
+                containers.remove(new_xs[index].shape)
+            else:
+                containers.append(new_xs[index].shape)
+
+            if new_xs[index] == i:
+                if len(containers) == 0:
+                    comps.n2 = Vacuum
+                else:
+                    comps.n2 = containers[-1].material.refractive_index
+
+                break
+
     comps.over_point = Tuples.add(comps.point, Tuples.multiply(comps.normal_vector, EPSILON))
-    # comps.under_point = sub(comps.point, multiply(comps.normal_vector, EPSILON))
+    comps.under_point = Tuples.sub(comps.point, Tuples.multiply(comps.normal_vector, EPSILON))
     return comps
 
-def shade_hit(world, comps):
+def shade_hit(world, comps, remaining):
     shadowed = is_shadowed(world, comps.over_point)
-    return Lighting(comps.shape.material, world.light, comps.over_point, comps.eye_vector, comps.normal_vector, shadowed)
+    surface = Lighting(comps.shape.material,comps.shape, world.light, comps.over_point, comps.eye_vector, comps.normal_vector, shadowed)
+    reflected = ReflectedColor(world, comps, remaining)
+    refracted = RefractedColor(world, comps, remaining)
+    material = comps.shape.material
+    if material.reflective > 0 and material.transparency > 0:
+        reflectance = schlick(comps)
+        return Color.add( Color.add(surface, Color.multiply(reflected, reflectance)), Color.multiply(refracted, (1-reflectance)) )
+    else:
+        return Color.add(surface, Color.add(reflected, refracted))
 
 def is_shadowed(world, point):
     v = Tuples.sub(world.light.position, point)
@@ -146,3 +154,49 @@ def is_shadowed(world, point):
         return True
     else:
         return False
+
+def ReflectedColor(world, comps, remaining):
+    if remaining <= 0:
+        return Color()
+    if comps.shape.material.reflective == 0:
+        return Color()
+    reflect_ray = Ray(comps.over_point, comps.reflect_vector)
+    color = color_at(world, reflect_ray, remaining - 1)
+    return Color.multiply(color, comps.shape.material.reflective)
+
+def RefractedColor(world, comps, remaining):
+    if remaining <= 0 or comps.shape.material.transparency == 0:
+        return Color()
+
+    n_ratio = comps.n1 / comps.n2
+    cos_i = Tuples.dot(comps.eye_vector, comps.normal_vector)
+    sin2_t = round( n_ratio * n_ratio * (1 - (cos_i * cos_i) ),5)
+
+    if sin2_t > 1:
+        return Color()
+
+    cos_t = round(sqrt(1.0 - sin2_t), 5)
+    _direction = Tuples.sub(Tuples.multiply(comps.normal_vector,  (n_ratio * cos_i) - cos_t ) , Tuples.multiply(comps.eye_vector, n_ratio))
+
+    refract_ray = Ray(comps.under_point, _direction)
+    # print(comps.shape.material.transparency)
+    new_color = color_at(world, refract_ray, remaining - 1)
+    return Color.multiply(new_color, comps.shape.material.transparency)
+
+def schlick(comps):
+    # cosine of the angle between the eye vector and the normal vector
+    angle_cos = Tuples.dot(comps.eye_vector, comps.normal_vector)
+    
+    # total internal reflection occur only if n1 > n2
+    if comps.n1 > comps.n2:
+
+        n = round(comps.n1 / comps.n2, 5)
+        sin2_t = ( n * n ) * (1 - (angle_cos * angle_cos) )
+        if sin2_t > 1.0:
+            return 1.0
+
+        cos_t = sqrt(1.0 - sin2_t)
+        # angle_cos = cos_t
+
+    r0 = pow(round( ((comps.n1 - comps.n2) / (comps.n1 + comps.n2)), 5),2)
+    return  round(r0 + ( 1 - r0) * pow(( 1 - angle_cos), 5), 5)

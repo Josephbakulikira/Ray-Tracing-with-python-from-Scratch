@@ -16,11 +16,11 @@ from utils.Shader.Light import *
 from utils.Shader.Material import *
 from utils.Camera import *
 from utils.World import *
-
+from utils.Shader.Patterns import *
 from math import pi, cos, sin
 
 width = 500
-height = 300
+height = 500
 
 size = (width, height)
 screen = pygame.display.set_mode(size)
@@ -28,37 +28,47 @@ clock = pygame.time.Clock()
 fps = 60
 
 
-floor = Plane()
-floor.transform = scaling(10, 0.01, 10)
-floor.material = Material()
-floor.material.color = Color(1, 0.9, 0.9)
-floor.material.specular = 0
+Floor = Plane()
+Floor.material = Material()
+Floor.transform = np.matmul( translation(0, 0, 10), rotation_x(pi/2))
+Floor.material.pattern = CheckerPattern(Color(0.15, 0.15, 0.15), Color(0.85,0.85, 0.85))
+Floor.material.ambient = 0.8
+Floor.material.diffuse = 0.2
+Floor.material.specular = 0;
 
-middle = Sphere()
-middle.transform = translation(-0.5, 1, 0.5)
-middle.material = Material()
-middle.material.color = Color(0.81, 0.2, 0.4)
-middle.material.diffuse = 0.7
-middle.material.specular = 0.3
+glassSphere = Sphere()
+glassSphere.material = Material()
+glassSphere.material.diffuse = 0.1
+glassSphere.material.shininess = 300.0
+glassSphere.material.transparency = 0.9
+glassSphere.material.reflective = 0.9
+glassSphere.material.refractive_index = 1.52
+glassSphere.material.ambient = 0
+glassSphere.material.color = Color.white()
+glassSphere.material.specular = 0.9
 
-right = Sphere()
-right.transform = np.matmul(translation(1.5, 0.5, -0.5) , scaling(0.5, 0.5, 0.5))
-right.material = Material()
-right.material.color = Color(0.2, 0.51, 0.71)
-right.material.diffuse = 0.7
-right.material.specular = 0.3
-
+airSphere = Sphere()
+airSphere.transform = scaling(0.5, 0.5, 0.5)
+airSphere.material = Material()
+airSphere.material.color = Color.white()
+airSphere.material.diffuse = 0
+airSphere.material.shininess = 300.0
+airSphere.material.reflective = 0.9
+airSphere.material.transparency = 0.9
+airSphere.material.ambient = 0
+airSphere.material.specular = 0.9
+airSphere.material.refractive_index = 1.0000034
 
 world = World()
-world.Objects = [floor, middle, right]
-world.light = PointLight(Point(-10, 10, -10), Color(1, 1, 1))
-cam = Camera(width,height, pi/3)
-cam.transform = view_transform(Point(0, 1.5, -5), Point(0, 1, 0), Vector3(0, 1, 0))
+world.Objects = [Floor, glassSphere, airSphere]
+world.light = PointLight(Point(2, 10, -5), Color(0.9, 0.9, 0.9))
+cam = Camera(width, height, 0.45)
+cam.transform = view_transform(Point(0,0, -5), Point(0, 0, 0), Vector3(0, 1, 0))
 
 def PixelRender(x, y):
     global cam, world
     ray = ray_for_pixel(cam, x, y)
-    color = color_at(world, ray)
+    color = color_at(world, ray, 5)
     pixel(screen, x, y, color.ConvertColor())
     pygame.display.update()
 
@@ -84,6 +94,6 @@ while run:
         if event.type == pygame.QUIT:
             run = False
 
-pygame.image.save(screen,"./images/planeandshadow.jpg")
+pygame.image.save(screen,"./images/reflectionRefraction.jpg")
 
 pygame.quit()
