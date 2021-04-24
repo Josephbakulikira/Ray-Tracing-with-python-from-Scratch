@@ -1,4 +1,5 @@
 # Ray-Tracing-with-python-from-Scratch
+## this code is not optimised at all
 ## part 1: Intro
 ### video: https://www.youtube.com/watch?v=zp-8y4MVqE4
 ## part 2: Simple Sphere
