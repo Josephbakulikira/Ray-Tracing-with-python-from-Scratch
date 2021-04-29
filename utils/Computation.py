@@ -1,7 +1,6 @@
 from utils.Tuples import *
 from utils.Ray import *
 from constants import *
-from utils.tools import *
 
 class Computations:
     def __init__(self, t, shape, point, eyev, normalv):
@@ -16,4 +15,4 @@ class Computations:
         self.reflect_vector = Vector3.zeros()
 
     def update(self):
-        self.over_point = Point.add(self.point, Point.multiply(self.normal_vector, EPSILON))
+        self.over_point = Point.add(self.point, point.multiply(self.normal_vector, EPSILON))
