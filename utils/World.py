@@ -12,6 +12,7 @@ class World:
 
     def DefaultWorld(self):
         sphere1 = Sphere()
+        self.Objects = []
         sphere1.material = Material(Color(0.8, 1.0, 0.6), 0.1, 0.7, 0.2)
         self.Objects.append(sphere1)
         sphere2 = Sphere()

@@ -8,8 +8,9 @@ class Material:
         self.diffuse = diffuse
         self.specular = specular
         self.shininess = 200.0
-        self.reflective = 0
+        self.reflective = 0.0
         self.refractive_index = 1.0
+        self.transparency = 0
         self.pattern = None
         self.name = "DefaultMaterial"
 

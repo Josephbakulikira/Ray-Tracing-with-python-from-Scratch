@@ -21,6 +21,12 @@ class Sphere(Shape):
         super().__init__(position)
         self.material = None
 
+    def GlassSphere(self):
+        self.transform = np.identity(4)
+        self.material = Material()
+        self.material.transparency = 1.0
+        self.material.refractive_index = 1.5
+
     def localIntersect(self, ray):
         sphereToRay = Tuples.sub(ray.origin, self.position)
 

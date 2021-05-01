@@ -64,6 +64,11 @@ class Vector3(Tuples):
     def units():
         return Vector3(1, 1, 1)
 
+    def negate(self):
+        self.x *= -1
+        self.y *= -1
+        self.z *= -1
+
     def GetMagnitude(v):
         return sqrt(pow(v.x, 2) + pow(v.y, 2) + pow(v.z, 2) + pow(v.w, 2))
 
