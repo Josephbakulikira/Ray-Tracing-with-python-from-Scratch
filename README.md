@@ -1,6 +1,6 @@
 
 # Ray-Tracing-with-python-from-Scratch
-    ![sceneReflection](https://user-images.githubusercontent.com/48150537/116791972-8f14d900-aadb-11eb-87fe-843391d5a5fd.jpg)
+![sceneReflection](https://user-images.githubusercontent.com/48150537/116791972-8f14d900-aadb-11eb-87fe-843391d5a5fd.jpg)
 
 ## this code is not optimised at all
 ## part 1: Intro
