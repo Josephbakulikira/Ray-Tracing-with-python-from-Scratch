@@ -2,7 +2,7 @@
 # Ray-Tracing-with-python-from-Scratch
 ![sceneReflection](https://user-images.githubusercontent.com/48150537/116791972-8f14d900-aadb-11eb-87fe-843391d5a5fd.jpg)
 
-## this code is not optimised at all
+### this code is not optimised at all, can't run in real time ,
 ## part 1: Intro
 ### video: https://www.youtube.com/watch?v=zp-8y4MVqE4
 ## part 2: Simple Sphere
